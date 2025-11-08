@@ -1,7 +1,7 @@
 {
-    "name" : "",
+    "name" : "Casibase",
     "appid" : "",
-    "description" : "",
+    "description" : "Open-source RAG knowledge base platform",
     "versionName" : "1.0.0",
     "versionCode" : "100",
     "transformPx" : false,

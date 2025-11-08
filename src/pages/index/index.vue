@@ -1,48 +1,131 @@
 <template>
-  <view class="content">
-    <image class="logo" src="/static/logo.png"></image>
-    <view class="text-area">
-      <text class="title">{{ title }}</text>
+  <view class="container">
+    <!-- Loading indicator -->
+    <view v-if="loading" class="loading-container">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">Loading...</text>
     </view>
+    
+    <!-- Error message -->
+    <view v-if="error" class="error-container">
+      <text class="error-text">{{ error }}</text>
+      <button @click="reload" class="reload-button">Retry</button>
+    </view>
+    
+    <!-- Web-view component for embedding H5 page -->
+    <web-view 
+      v-if="!error"
+      :src="webUrl" 
+      @message="handleMessage"
+      @error="handleError"
+      @load="handleLoad"
+    ></web-view>
   </view>
 </template>
 
 <script>
+import config from '@/config.js'
+
 export default {
   data() {
     return {
-      title: 'Hello',
+      webUrl: config.casibaseUrl,
+      loading: true,
+      error: null,
     }
   },
-  onLoad() {},
-  methods: {},
+  onLoad() {
+    console.log('Loading Casibase page:', this.webUrl)
+  },
+  methods: {
+    handleMessage(event) {
+      // Handle messages from the web-view
+      console.log('Message from web-view:', event.detail.data)
+    },
+    handleError(event) {
+      console.error('Web-view error:', event)
+      this.loading = false
+      this.error = 'Failed to load page. Please check your network connection and try again.'
+    },
+    handleLoad(event) {
+      console.log('Web-view loaded successfully')
+      this.loading = false
+      this.error = null
+    },
+    reload() {
+      this.loading = true
+      this.error = null
+      // Force reload by updating the URL
+      const url = this.webUrl
+      this.webUrl = ''
+      this.$nextTick(() => {
+        this.webUrl = url
+      })
+    }
+  },
 }
 </script>
 
-<style>
-.content {
+<style scoped>
+.container {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+}
+
+.loading-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  height: 100vh;
+  background-color: #ffffff;
 }
 
-.logo {
-  height: 200rpx;
-  width: 200rpx;
-  margin-top: 200rpx;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 50rpx;
+.loading-spinner {
+  width: 40rpx;
+  height: 40rpx;
+  border: 4rpx solid #f3f3f3;
+  border-top: 4rpx solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
-.text-area {
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  margin-top: 20rpx;
+  font-size: 28rpx;
+  color: #666;
+}
+
+.error-container {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
+  height: 100vh;
+  padding: 40rpx;
+  background-color: #ffffff;
 }
 
-.title {
-  font-size: 36rpx;
-  color: #8f8f94;
+.error-text {
+  font-size: 28rpx;
+  color: #e74c3c;
+  text-align: center;
+  margin-bottom: 40rpx;
+  line-height: 1.6;
+}
+
+.reload-button {
+  padding: 20rpx 60rpx;
+  background-color: #3498db;
+  color: #ffffff;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  border: none;
 }
 </style>
