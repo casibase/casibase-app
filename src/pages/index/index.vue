@@ -8,7 +8,9 @@
     
     <!-- Error message -->
     <view v-if="error" class="error-container">
+      <text class="error-icon">⚠️</text>
       <text class="error-text">{{ error }}</text>
+      <text class="error-hint">{{ errorHint }}</text>
       <button @click="reload" class="reload-button">Retry</button>
     </view>
     
@@ -32,6 +34,7 @@ export default {
       webUrl: config.casibaseUrl,
       loading: true,
       error: null,
+      errorHint: '',
     }
   },
   onLoad() {
@@ -45,16 +48,27 @@ export default {
     handleError(event) {
       console.error('Web-view error:', event)
       this.loading = false
-      this.error = 'Failed to load page. Please check your network connection and try again.'
+      this.error = 'Failed to load page'
+      
+      // Provide helpful error hints based on the platform
+      // #ifdef MP-WEIXIN
+      this.errorHint = 'Please ensure the domain is configured as Business Domain (业务域名) in WeChat MP Console. See documentation for setup instructions.'
+      // #endif
+      
+      // #ifndef MP-WEIXIN
+      this.errorHint = 'Please check your network connection and try again.'
+      // #endif
     },
     handleLoad(event) {
       console.log('Web-view loaded successfully')
       this.loading = false
       this.error = null
+      this.errorHint = ''
     },
     reload() {
       this.loading = true
       this.error = null
+      this.errorHint = ''
       // Force reload by updating the URL
       const url = this.webUrl
       this.webUrl = ''
@@ -112,12 +126,28 @@ export default {
   background-color: #ffffff;
 }
 
+.error-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}
+
 .error-text {
-  font-size: 28rpx;
+  font-size: 32rpx;
   color: #e74c3c;
   text-align: center;
-  margin-bottom: 40rpx;
+  margin-bottom: 20rpx;
+  font-weight: 600;
   line-height: 1.6;
+}
+
+.error-hint {
+  font-size: 24rpx;
+  color: #666;
+  text-align: center;
+  margin-bottom: 40rpx;
+  line-height: 1.8;
+  padding: 0 20rpx;
+  max-width: 600rpx;
 }
 
 .reload-button {

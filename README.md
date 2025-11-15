@@ -66,8 +66,15 @@ npm run build:mp-weixin
 Before publishing to WeChat:
 
 1. Update the `appid` in `src/manifest.json` with your WeChat miniprogram AppID
-2. Ensure the domain `ai-admin.casibase.com` (or your configured domain) is added to the whitelist in WeChat miniprogram settings
-3. Set `urlCheck: false` in `mp-weixin.setting` for development, or configure the business domain properly for production
+2. **Configure Business Domain**: Add your Casibase domain (e.g., `mini.casibase.com`) to the **Business Domain** (业务域名) in WeChat MP Console
+3. **Upload Verification File**: Download and upload the verification file to your domain's root directory
+4. **Configure Server Domain**: Add the domain to **Server Domain** (服务器域名) for API requests
+5. Ensure your domain uses **HTTPS** with a valid SSL certificate
+
+⚠️ **Important**: The `web-view` component will show a blank screen if the domain is not properly configured in WeChat MP Console. See [WECHAT_SETUP.md](WECHAT_SETUP.md) for detailed setup instructions.
+
+**Development**: Set `urlCheck: false` in `mp-weixin.setting` to bypass domain checks during development.
+**Production**: Always configure domains properly and set `urlCheck: true`.
 
 ## Project Structure
 
